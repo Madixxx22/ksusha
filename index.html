@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Приглашение 💌</title>
+<meta name="description" content="У меня для тебя кое-что есть 💌">
+<meta property="og:title" content="Приглашение 💌">
+<meta property="og:description" content="У меня для тебя кое-что есть">
+<meta name="theme-color" content="#fde8ee">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💌</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   НАСТРОЙКИ — всё, что нужно поменять, находится в блоке CONFIG ниже (в <script>)
+   ===================================================================== */
+:root{
+  --bg1:#fff0f2; --bg2:#fde3ec; --ink:#1e2638; --muted:#5d6b84;
+  --pink:#f4436c; --pink2:#e2459b; --pink-soft:#f9b6c9; --line:#f7a4b8;
+  --card:#fdf0f5; --white:#fff;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{
+  font-family:Manrope,system-ui,-apple-system,sans-serif;color:var(--ink);
+  background:radial-gradient(120% 80% at 0% 0%,#ffe9ec 0%,transparent 60%),
+             radial-gradient(120% 80% at 100% 100%,#fcd5e6 0%,transparent 60%),
+             linear-gradient(180deg,var(--bg1),var(--bg2));
+  min-height:100dvh;overflow-x:hidden;
+}
+#hearts-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bg-heart{position:absolute;bottom:-40px;opacity:.0;animation:floatUp linear forwards;filter:drop-shadow(0 4px 6px rgba(244,67,108,.15))}
+@keyframes floatUp{
+  0%{transform:translateY(0) translateX(0) rotate(0) scale(.7);opacity:0}
+  10%{opacity:.75}
+  50%{transform:translateY(-55vh) translateX(var(--dx)) rotate(var(--rot)) scale(1)}
+  100%{transform:translateY(-115vh) translateX(calc(var(--dx)*-1)) rotate(calc(var(--rot)*-1)) scale(.9);opacity:0}
+}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
+
+.wrap{position:relative;z-index:1;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px 16px calc(24px + env(safe-area-inset-bottom))}
+.phone{
+  position:relative;width:100%;max-width:420px;min-height:min(640px,calc(100dvh - 48px));
+  background:var(--card);border-radius:44px;border:10px solid var(--white);
+  box-shadow:0 30px 60px -20px rgba(226,69,155,.35),0 0 0 1px rgba(244,67,108,.06);
+  overflow:hidden;display:flex;flex-direction:column;
+}
+.handle{width:76px;height:7px;border-radius:9px;background:#fcd9df;margin:16px auto 0;flex:none}
+
+.screen{position:absolute;inset:23px 0 0 0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px 26px 34px;text-align:center;opacity:0;pointer-events:none;
+  transform:translateX(40px) scale(.97);transition:opacity .55s ease,transform .65s cubic-bezier(.2,.9,.25,1.15)}
+.screen.active{opacity:1;pointer-events:auto;transform:none}
+.screen.leave{opacity:0;transform:translateX(-40px) scale(.97)}
+/* поочередное появление элементов */
+.screen .rise{opacity:0;transform:translateY(18px)}
+.screen.active .rise{animation:rise .7s cubic-bezier(.2,.9,.25,1.2) forwards}
+.screen.active .rise:nth-child(1){animation-delay:.08s}
+.screen.active .rise:nth-child(2){animation-delay:.18s}
+.screen.active .rise:nth-child(3){animation-delay:.28s}
+.screen.active .rise:nth-child(4){animation-delay:.38s}
+.screen.active .rise:nth-child(5){animation-delay:.48s}
+.screen.active .rise:nth-child(6){animation-delay:.58s}
+.screen.active .rise:nth-child(7){animation-delay:.68s}
+@keyframes rise{to{opacity:1;transform:none}}
+
+h1,h2{font-family:Unbounded,Manrope,sans-serif;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1.12}
+h1{font-size:clamp(28px,8.2vw,36px)}
+h2{font-size:clamp(26px,7.6vw,33px)}
+.eyebrow{font-weight:800;letter-spacing:.32em;color:#f2717f;font-size:15px;margin:22px 0 14px}
+.greet{font-size:20px;font-weight:600;margin-bottom:10px}
+.sub{font-size:17px;color:#2b3550;margin:18px 0 0;font-weight:600}
+
+.btn{font:inherit;font-weight:800;font-size:18px;border:0;border-radius:999px;cursor:pointer;color:#fff;
+  padding:19px 30px;background:linear-gradient(90deg,#f4436c,#e43d8a 60%,#d6337a);
+  box-shadow:0 14px 26px -10px rgba(228,61,138,.55);transition:transform .25s cubic-bezier(.2,.9,.3,1.4),opacity .3s,filter .3s;
+  position:relative;overflow:hidden}
+.btn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);
+  transform:translateX(-120%);animation:shine 3.2s ease-in-out infinite}
+@keyframes shine{0%,55%{transform:translateX(-120%)}85%,100%{transform:translateX(120%)}}
+.btn:active{transform:scale(.96)}
+.btn.wide{width:100%}
+.btn[disabled]{opacity:.45;filter:saturate(.6);cursor:not-allowed}
+.btn[disabled]::after{display:none}
+
+/* ---------- экран 1 ---------- */
+.answers{position:relative;width:100%;height:150px;margin-top:34px}
+#yesBtn{position:absolute;left:50%;top:0;transform:translateX(-50%) scale(var(--s,1));width:min(78%,300px);
+  background:linear-gradient(90deg,#fb7185,#e8479a);transition:transform .35s cubic-bezier(.2,.9,.3,1.5)}
+#yesBtn:active{transform:translateX(-50%) scale(calc(var(--s,1)*.95))}
+#noBtn{position:absolute;left:50%;top:70px;transform:translateX(-50%);color:#3b4763;background:#fff;
+  border:3px solid #fde1e7;box-shadow:0 12px 24px -12px rgba(0,0,0,.18);width:min(52%,210px);padding:16px 20px;
+  transition:left .32s cubic-bezier(.2,.9,.3,1.3),top .32s cubic-bezier(.2,.9,.3,1.3),opacity .4s,transform .3s}
+#noBtn::after{display:none}
+
+/* ---------- экран 3 ---------- */
+.field{width:100%;text-align:left;margin-top:16px}
+.field label{display:block;font-weight:800;color:var(--muted);font-size:16px;margin:0 0 10px 2px}
+.input{width:100%;font:inherit;font-weight:700;font-size:18px;color:var(--ink);text-align:center;
+  background:#fdf2f6;border:3px solid #fbe3ea;border-radius:22px;padding:17px 14px;outline:none;appearance:none;-webkit-appearance:none;
+  transition:border-color .2s,box-shadow .2s;min-height:62px}
+.input:focus{border-color:var(--pink-soft);box-shadow:0 0 0 5px rgba(249,182,201,.25)}
+.date-btn{cursor:pointer;color:var(--muted);position:relative}
+.date-btn.filled{color:var(--ink)}
+.date-btn input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;font-size:16px}
+.time-row{display:flex;align-items:center;gap:10px}
+.time-row .sel{position:relative;flex:1}
+.time-row select{text-align:left;padding-left:24px;color:var(--muted)}
+.time-row select.filled{color:var(--ink)}
+.time-row .sel::after{content:"";position:absolute;right:22px;top:50%;width:9px;height:9px;border:solid #2b3550;border-width:0 2.5px 2.5px 0;
+  transform:translateY(-80%) rotate(45deg);pointer-events:none}
+.colon{font-weight:800;font-size:24px;color:var(--muted)}
+#whenBtn{margin-top:28px}
+
+/* ---------- экран 4 ---------- */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;margin-top:30px}
+.opt{font:inherit;cursor:pointer;background:linear-gradient(180deg,#fff,#fdf1f6);border:3px solid #fbe3ea;border-radius:28px;
+  padding:20px 10px 18px;min-height:128px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 10px 20px -14px rgba(226,69,155,.4);transition:transform .25s cubic-bezier(.2,.9,.3,1.5),border-color .2s,box-shadow .2s;color:#2b3550}
+.opt .emo{font-size:42px;line-height:1;transition:transform .35s cubic-bezier(.2,.9,.3,1.6)}
+.opt .lbl{font-weight:800;font-size:17px;line-height:1.25}
+.opt:hover .emo{transform:scale(1.12) rotate(-6deg)}
+.opt:active{transform:scale(.95)}
+.opt.picked{border-color:#f39bb0;box-shadow:0 0 0 4px rgba(249,182,201,.35),0 18px 30px -14px rgba(226,69,155,.55);transform:translateY(-3px)}
+.opt.picked .emo{animation:wiggle .6s ease}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-14deg) scale(1.2)}75%{transform:rotate(10deg) scale(1.15)}}
+
+/* ---------- экран 5 (билет) ---------- */
+#s5{justify-content:flex-start;padding:22px 20px 26px}
+.ticket{position:relative;width:100%;border:3px dashed var(--line);border-radius:44px;padding:26px 22px 18px;
+  background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(253,233,241,.5))}
+.ticket .tear{position:relative;margin:24px -22px 6px;border-top:3px dashed var(--line)}
+.ticket .tear::before,.ticket .tear::after{content:"";position:absolute;top:-24px;width:44px;height:44px;border-radius:50%;background:var(--card)}
+.ticket .tear::before{left:-26px}
+.ticket .tear::after{right:-26px}
+.yes-line{font-size:18px;font-weight:600;margin-top:8px}
+.ticket h2{margin:10px 0 14px}
+.summary{font-size:16px;font-weight:600;line-height:1.7;color:#2b3550}
+.rows{text-align:left;padding:8px 10px 0}
+.row{display:flex;align-items:center;gap:14px;font-family:Unbounded,sans-serif;font-weight:800;font-size:clamp(19px,5.6vw,23px);margin:18px 0}
+.row .ic{font-size:30px;width:36px;text-align:center}
+.shot{font-size:15px;font-weight:700;color:var(--muted);margin-top:16px}
+.ticket .rise{opacity:0;transform:translateY(18px)}
+#s5.active .ticket .rise{animation:rise .7s cubic-bezier(.2,.9,.25,1.2) forwards}
+#s5.active .ticket .rise:nth-of-type(n){animation-delay:calc(var(--i)*.12s + .2s)}
+#s5.active .ticket{animation:ticketIn .9s cubic-bezier(.2,.9,.25,1.25)}
+@keyframes ticketIn{0%{transform:scale(.85) rotate(-3deg);opacity:0}100%{transform:none;opacity:1}}
+.ticket .side-heart{position:absolute;font-size:30px;animation:bob 3s ease-in-out infinite;opacity:.85}
+.restart{font:inherit;background:none;border:0;color:var(--muted);font-weight:700;font-size:14px;margin-top:14px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;opacity:.7}
+
+/* ---------- персонажи (SVG) ---------- */
+.char{width:150px;height:150px;flex:none}
+.char.big{width:210px;height:210px}
+.bob{animation:bob 3s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.pulse{transform-origin:center;transform-box:fill-box;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}15%{transform:scale(1.12)}30%{transform:scale(.98)}45%{transform:scale(1.07)}}
+.blink{transform-origin:center;transform-box:fill-box;animation:blink 4s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
+.wave{transform-origin:20% 90%;transform-box:fill-box;animation:wave 1.6s ease-in-out infinite}
+@keyframes wave{0%,100%{transform:rotate(0)}50%{transform:rotate(-14deg)}}
+.hover{animation:hover 2.6s ease-in-out infinite}
+@keyframes hover{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}
+.beam{transform-origin:top center;transform-box:fill-box;animation:beam 2s ease-in-out infinite}
+@keyframes beam{0%,100%{opacity:.55;transform:scaleX(.9)}50%{opacity:.95;transform:scaleX(1.05)}}
+.lights circle{animation:lights 1.2s infinite}
+.lights circle:nth-child(2){animation-delay:.2s}.lights circle:nth-child(3){animation-delay:.4s}
+.lights circle:nth-child(4){animation-delay:.6s}.lights circle:nth-child(5){animation-delay:.8s}
+@keyframes lights{0%,100%{fill:#f6c453}50%{fill:#fff3c4}}
+.abduct{animation:abduct 2.4s ease-in infinite;transform-box:fill-box;transform-origin:center}
+@keyframes abduct{0%{transform:translateY(0) scale(1);opacity:1}80%{opacity:1}100%{transform:translateY(-62px) scale(.5);opacity:0}}
+.kiss{animation:kiss 2.6s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes kiss{0%{transform:translate(0,0) scale(.3);opacity:0}15%{opacity:1}70%{transform:translate(-40px,-46px) scale(1.1);opacity:1}100%{transform:translate(-52px,-60px) scale(1.15);opacity:0}}
+.shake{animation:shake .5s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+
+.burst{position:fixed;pointer-events:none;z-index:60;font-size:22px;animation:burst 1s cubic-bezier(.15,.8,.3,1) forwards}
+@keyframes burst{0%{transform:translate(-50%,-50%) scale(.3);opacity:1}100%{transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) scale(1.1) rotate(var(--r));opacity:0}}
+
+@media (max-height:700px){.char{width:120px;height:120px}.char.big{width:160px;height:160px}.opt{min-height:108px}.answers{margin-top:22px}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}}
+</style>
+</head>
+<body>
+<div id="hearts-bg"></div>
+<canvas id="confetti"></canvas>
+
+<main class="wrap">
+  <div class="phone" id="phone">
+    <div class="handle"></div>
+
+    <!-- ===== 1. Приглашение ===== -->
+    <section class="screen active" id="s1">
+      <svg class="char bob rise" viewBox="0 0 160 160" aria-hidden="true">
+        <!-- оригинальный мишка с сердцем -->
+        <circle cx="48" cy="34" r="17" fill="#f6e2c4"/><circle cx="48" cy="34" r="9" fill="#f47aa5"/>
+        <circle cx="112" cy="34" r="17" fill="#f6e2c4"/><circle cx="112" cy="34" r="9" fill="#f47aa5"/>
+        <ellipse cx="80" cy="62" rx="44" ry="40" fill="#f6e2c4"/>
+        <ellipse cx="80" cy="128" rx="40" ry="30" fill="#f6e2c4"/>
+        <g class="blink"><circle cx="64" cy="58" r="5" fill="#1e2638"/><circle cx="96" cy="58" r="5" fill="#1e2638"/></g>
+        <circle cx="66" cy="56" r="1.6" fill="#fff"/><circle cx="98" cy="56" r="1.6" fill="#fff"/>
+        <path d="M73 70 q7 6 14 0 q-7 -8 -14 0z" fill="#1aa59a"/>
+        <path d="M80 75 v4 M74 82 q6 5 12 0" stroke="#1aa59a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <g class="pulse">
+          <path d="M80 152 C40 128 34 98 54 90 C66 85 76 92 80 100 C84 92 94 85 106 90 C126 98 120 128 80 152Z" fill="#ec2c4b"/>
+          <path d="M80 140 C52 122 48 102 60 97 C70 93 77 99 80 106" stroke="#f9587a" stroke-width="5" fill="none" stroke-linecap="round"/>
+        </g>
+        <ellipse cx="48" cy="122" rx="14" ry="12" fill="#f47aa5"/><ellipse cx="112" cy="122" rx="14" ry="12" fill="#f47aa5"/>
+        <ellipse cx="66" cy="148" rx="12" ry="11" fill="#f47aa5"/><ellipse cx="94" cy="148" rx="12" ry="11" fill="#f47aa5"/>
+      </svg>
+      <div class="eyebrow rise">ПРИГЛАШЕНИЕ</div>
+      <div class="greet rise"><span data-name></span>, привет 👋</div>
+      <h1 class="rise" id="inviteText"></h1>
+      <div class="answers rise" id="answers">
+        <button class="btn" id="yesBtn">Да, конечно</button>
+        <button class="btn" id="noBtn">Нет</button>
+      </div>
+    </section>
+
+    <!-- ===== 2. Радость ===== -->
+    <section class="screen" id="s2">
+      <svg class="char big bob rise" viewBox="0 0 200 200" aria-hidden="true">
+        <!-- оригинальный зелёный пушистик -->
+        <path d="M30 92 C24 52 52 34 74 44 C88 50 92 64 100 64 C108 64 112 50 126 44 C148 34 176 52 170 92 C166 122 150 140 100 140 C50 140 34 122 30 92Z" fill="#1f9d63"/>
+        <path d="M36 92 C32 58 56 44 74 52 C86 57 92 70 100 70 C108 70 114 57 126 52 C144 44 168 58 164 92 C161 118 146 132 100 132 C54 132 39 118 36 92Z" fill="#34c27d"/>
+        <g class="blink">
+          <circle cx="68" cy="82" r="27" fill="#fff" stroke="#14532d" stroke-width="4"/>
+          <circle cx="132" cy="82" r="27" fill="#fff" stroke="#14532d" stroke-width="4"/>
+          <circle cx="70" cy="86" r="17" fill="#111"/><circle cx="130" cy="86" r="17" fill="#111"/>
+          <circle cx="62" cy="78" r="6" fill="#fff"/><circle cx="122" cy="78" r="6" fill="#fff"/>
+          <circle cx="76" cy="94" r="3" fill="#fff"/><circle cx="136" cy="94" r="3" fill="#fff"/>
+        </g>
+        <g fill="#f8796b" opacity=".85"><circle cx="48" cy="114" r="3"/><circle cx="56" cy="118" r="3"/><circle cx="46" cy="122" r="3"/>
+          <circle cx="152" cy="114" r="3"/><circle cx="144" cy="118" r="3"/><circle cx="154" cy="122" r="3"/></g>
+        <path d="M84 112 q16 14 32 0" stroke="#14532d" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M74 140 q26 20 52 0 v10 q-26 16 -52 0z" fill="#e23a4e" stroke="#7f1d1d" stroke-width="3"/>
+        <g class="pulse"><path d="M164 34 c-6 -8 -18 -4 -16 6 c2 8 16 16 16 16 s14 -8 16 -16 c2 -10 -10 -14 -16 -6z" fill="#f4436c"/></g>
+      </svg>
+      <h2 class="rise" id="s2Title">Скорее бы обнять тебя</h2>
+      <p class="sub rise">Теперь давай выберем детали</p>
+      <button class="btn wide rise" style="margin-top:34px" id="toWhen">Давай</button>
+    </section>
+
+    <!-- ===== 3. Когда ===== -->
+    <section class="screen" id="s3">
+      <svg class="char rise" viewBox="0 0 160 160" aria-hidden="true" style="overflow:visible">
+        <g class="hover">
+          <defs><linearGradient id="bm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe08a"/><stop offset="1" stop-color="#ffe08a" stop-opacity="0"/></linearGradient></defs>
+          <path class="beam" d="M66 70 L54 150 L106 150 L94 70Z" fill="url(#bm)"/>
+          <path d="M60 50 C60 30 100 30 100 50Z" fill="#7dd3fc" stroke="#1e2638" stroke-width="3"/>
+          <circle cx="80" cy="44" r="7" fill="#a5b4fc"/><circle cx="77" cy="43" r="1.3" fill="#1e2638"/><circle cx="83" cy="43" r="1.3" fill="#1e2638"/>
+          <path d="M70 34 L64 22 M90 34 L96 22" stroke="#1e2638" stroke-width="2.5"/><circle cx="64" cy="21" r="3" fill="#1e2638"/><circle cx="96" cy="21" r="3" fill="#1e2638"/>
+          <ellipse cx="80" cy="58" rx="46" ry="13" fill="#c084fc" stroke="#1e2638" stroke-width="3"/>
+          <ellipse cx="80" cy="66" rx="16" ry="5" fill="#f6c453" stroke="#1e2638" stroke-width="2"/>
+          <g class="lights"><circle cx="52" cy="58" r="3"/><circle cx="66" cy="61" r="3"/><circle cx="80" cy="62" r="3"/><circle cx="94" cy="61" r="3"/><circle cx="108" cy="58" r="3"/></g>
+          <path class="abduct" d="M80 146 c-3 -4 -9 -2 -8 3 c1 4 8 8 8 8 s7 -4 8 -8 c1 -5 -5 -7 -8 -3z" fill="#f4436c"/>
+        </g>
+      </svg>
+      <h2 class="rise" style="margin-top:14px">Когда тебе будет удобно?</h2>
+      <div class="field rise" style="margin-top:26px">
+        <label for="dateInput">Дата</label>
+        <div class="input date-btn" id="dateBox"><span id="dateLabel">Выбери дату</span><input type="date" id="dateInput"></div>
+      </div>
+      <div class="field rise">
+        <label>Время</label>
+        <div class="time-row">
+          <div class="sel"><select class="input" id="hh" aria-label="Часы"><option value="">ЧЧ</option></select></div>
+          <span class="colon">:</span>
+          <div class="sel"><select class="input" id="mm" aria-label="Минуты"><option value="">ММ</option></select></div>
+        </div>
+      </div>
+      <button class="btn wide rise" id="whenBtn" disabled>Выбери дату 💗</button>
+    </section>
+
+    <!-- ===== 4. Что делаем ===== -->
+    <section class="screen" id="s4">
+      <div class="rise" style="font-size:44px" ><span class="pulse" style="display:inline-block">💕</span></div>
+      <h2 class="rise" style="margin-top:10px">Что будем делать?</h2>
+      <p class="sub rise" style="margin-top:14px">Выбери то, что хочется больше всего</p>
+      <div class="grid rise" id="grid"></div>
+    </section>
+
+    <!-- ===== 5. Билет ===== -->
+    <section class="screen" id="s5">
+      <div class="ticket">
+        <span class="side-heart" style="left:-14px;top:52%">💗</span>
+        <span class="side-heart" style="right:-10px;top:66%;animation-delay:1s">💗</span>
+        <svg class="char rise" style="--i:0;width:170px;height:150px;overflow:visible" viewBox="0 0 170 150" aria-hidden="true">
+          <!-- оригинальный котик с воздушным поцелуем -->
+          <path class="kiss" d="M52 34 c-4 -6 -14 -3 -12 5 c1 6 12 12 12 12 s11 -6 12 -12 c2 -8 -8 -11 -12 -5z" fill="#f4436c" stroke="#9f1239" stroke-width="2"/>
+          <path d="M58 52 L52 14 L84 36Z M132 52 L138 14 L106 36Z" fill="#f59e0b" stroke="#7c2d12" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M60 46 L57 24 L76 38Z M130 46 L133 24 L114 38Z" fill="#fbcfe8"/>
+          <ellipse cx="95" cy="82" rx="54" ry="46" fill="#fb923c" stroke="#7c2d12" stroke-width="3"/>
+          <path d="M80 44 q4 10 0 18 M95 40 v18 M110 44 q-4 10 0 18" stroke="#c2410c" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <ellipse cx="95" cy="104" rx="30" ry="20" fill="#fde7c8"/>
+          <path d="M66 78 q9 -9 18 0 M106 78 q9 -9 18 0" stroke="#1e2638" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <ellipse cx="66" cy="96" rx="9" ry="5" fill="#f9a8d4" opacity=".8"/><ellipse cx="124" cy="96" rx="9" ry="5" fill="#f9a8d4" opacity=".8"/>
+          <path d="M90 94 h10 l-5 6z" fill="#be185d"/>
+          <circle cx="95" cy="108" r="4" fill="none" stroke="#7c2d12" stroke-width="3"/>
+          <path d="M40 100 l-18 -3 M40 108 l-18 3 M150 100 l18 -3 M150 108 l18 3" stroke="#7c2d12" stroke-width="2" stroke-linecap="round"/>
+          <g class="wave"><ellipse cx="54" cy="122" rx="16" ry="12" fill="#fb923c" stroke="#7c2d12" stroke-width="3"/></g>
+        </svg>
+        <div class="yes-line rise" style="--i:1"><span data-name></span>, ты сказала «Да» 💘</div>
+        <h2 class="rise" style="--i:2">Договорились!</h2>
+        <div class="summary rise" style="--i:3" id="summary"></div>
+        <div class="tear"></div>
+        <div class="rows">
+          <div class="row rise" style="--i:4"><span class="ic">📅</span><span id="tDate"></span></div>
+          <div class="row rise" style="--i:5"><span class="ic">🕡</span><span id="tTime"></span></div>
+          <div class="row rise" style="--i:6"><span class="ic">✨</span><span id="tWhat"></span></div>
+        </div>
+        <div class="shot rise" style="--i:7;text-align:center">Скриншоть и сохрани 📸</div>
+      </div>
+      <button class="restart" id="restart">Пройти заново</button>
+    </section>
+  </div>
+</main>
+
+<script>
+/* =====================================================================
+   CONFIG — правь здесь
+   ===================================================================== */
+const CONFIG = {
+  name: "Ксюша",
+  inviteText: "Я безумно соскучился. Пойдешь со мной на свидание?",
+  afterYes: "Скорее бы обнять тебя",
+  options: [
+    { emoji: "🍾", label: "Michèle" },
+    { emoji: "🍣", label: "Duo asia" },
+    { emoji: "📺", label: "Кино у меня" },
+    { emoji: "🎬", label: "Кинотеатр на двоих" },
+    { emoji: "🌃", label: "Прогулка" },
+    { emoji: "🎢", label: "Парк аттракционов" },
+  ],
+  noTexts: ["Нет", "Точно?", "Подумай ещё 🥺", "Ну пожалуйста", "Не поймаешь 😜", "Сдаюсь…"],
+  minuteStep: 5,          // шаг минут в выборе времени (1, 5, 10, 15)
+  // Уведомление тебе, когда она ответит (необязательно).
+  // Поставь приложение ntfy (iOS/Android), подпишись на свою тему и впиши её сюда.
+  // Пусто — уведомления выключены.
+  ntfyTopic: "aldoshenkoksu",        // например "ksyusha-date-7f3k9q" — придумай длинное случайное имя
+};
+/* ===================================================================== */
+
+// URL-параметры позволяют переиспользовать страницу: ?name=Маша&text=...
+const qp = new URLSearchParams(location.search);
+if (qp.get("name")) CONFIG.name = qp.get("name");
+if (qp.get("text")) CONFIG.inviteText = qp.get("text");
+
+const $ = s => document.querySelector(s);
+document.querySelectorAll("[data-name]").forEach(e => e.textContent = CONFIG.name);
+$("#inviteText").textContent = CONFIG.inviteText;
+$("#s2Title").textContent = CONFIG.afterYes;
+document.title = `${CONFIG.name}, у меня для тебя приглашение 💌`;
+
+const state = { date: "", hh: "", mm: "", what: "" };
+const MONTHS = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+const fmtDate = iso => { const [y,m,d] = iso.split("-").map(Number); return `${d} ${MONTHS[m-1]}`; };
+
+/* ---------- навигация ---------- */
+let current = "s1";
+function go(id){
+  const from = $("#"+current), to = $("#"+id);
+  from.classList.add("leave"); from.classList.remove("active");
+  setTimeout(() => from.classList.remove("leave"), 650);
+  to.classList.add("active");
+  current = id;
+}
+
+/* ---------- плавающие сердечки на фоне ---------- */
+const HEARTS = ["💗","💖","💕","❤️","🩷","💘"];
+function spawnHeart(){
+  const el = document.createElement("span");
+  el.className = "bg-heart";
+  el.textContent = HEARTS[Math.random()*HEARTS.length|0];
+  el.style.left = Math.random()*100 + "vw";
+  el.style.fontSize = (16 + Math.random()*22) + "px";
+  el.style.setProperty("--dx", (Math.random()*80-40) + "px");
+  el.style.setProperty("--rot", (Math.random()*50-25) + "deg");
+  const dur = 9 + Math.random()*8;
+  el.style.animationDuration = dur + "s";
+  $("#hearts-bg").appendChild(el);
+  setTimeout(() => el.remove(), dur*1000);
+}
+for (let i=0;i<6;i++) setTimeout(spawnHeart, i*700);
+setInterval(spawnHeart, 1300);
+
+/* ---------- взрыв сердечек из точки ---------- */
+function burst(x, y, n=16){
+  for (let i=0;i<n;i++){
+    const el = document.createElement("span");
+    el.className = "burst";
+    el.textContent = HEARTS[Math.random()*HEARTS.length|0];
+    const a = Math.random()*Math.PI*2, r = 70 + Math.random()*110;
+    el.style.left = x+"px"; el.style.top = y+"px";
+    el.style.setProperty("--x", Math.cos(a)*r+"px");
+    el.style.setProperty("--y", Math.sin(a)*r-40+"px");
+    el.style.setProperty("--r", (Math.random()*80-40)+"deg");
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1000);
+  }
+}
+const centerOf = el => { const r = el.getBoundingClientRect(); return [r.left+r.width/2, r.top+r.height/2]; };
+
+/* ---------- экран 1: убегающее «Нет» ---------- */
+const yes = $("#yesBtn"), no = $("#noBtn"), answers = $("#answers"), phone = $("#phone");
+let tries = 0, yesScale = 1;
+function dodge(e){
+  if (e) e.preventDefault();
+  tries++;
+  no.textContent = CONFIG.noTexts[Math.min(tries, CONFIG.noTexts.length-1)];
+  yesScale = Math.min(1 + tries*0.09, 1.45);
+  yes.style.setProperty("--s", yesScale);
+  if (tries >= CONFIG.noTexts.length + 2){ no.style.opacity = 0; no.style.pointerEvents = "none"; return; }
+  // переносим кнопку в случайное место внутри «телефона», но не на «Да»
+  const pr = phone.getBoundingClientRect(), ar = answers.getBoundingClientRect(), yr = yes.getBoundingClientRect();
+  const bw = no.offsetWidth, bh = no.offsetHeight;
+  let x, y, guard = 0;
+  do {
+    x = 16 + Math.random()*(pr.width - bw - 52) + pr.left - ar.left;
+    y = -ar.top + pr.top + 40 + Math.random()*(pr.height - bh - 80);
+    guard++;
+    const ax = ar.left + x, ay = ar.top + y;
+    var overlap = ax < yr.right+10 && ax+bw > yr.left-10 && ay < yr.bottom+10 && ay+bh > yr.top-10;
+    var near = Math.abs(ax+bw/2 - (e?.clientX ?? -999)) < bw && Math.abs(ay+bh/2 - (e?.clientY ?? -999)) < bh*1.4;
+  } while ((overlap || near) && guard < 40);
+  no.style.transform = "none";
+  no.style.left = x + "px"; no.style.top = y + "px";
+}
+no.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") dodge(e); });
+no.addEventListener("pointerdown", dodge);
+no.addEventListener("click", e => e.preventDefault());
+
+yes.addEventListener("click", () => {
+  const [x,y] = centerOf(yes); burst(x,y,22);
+  notify(`💘 ${CONFIG.name} нажала «Да»!`);
+  setTimeout(() => go("s2"), 450);
+});
+
+/* ---------- экран 2 ---------- */
+$("#toWhen").addEventListener("click", e => { const [x,y]=centerOf(e.currentTarget); burst(x,y,10); go("s3"); });
+
+/* ---------- экран 3: дата/время ---------- */
+const dateInput = $("#dateInput"), hh = $("#hh"), mm = $("#mm"), whenBtn = $("#whenBtn");
+const today = new Date(); today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+dateInput.min = today.toISOString().slice(0,10);
+for (let h=0; h<24; h++) hh.add(new Option(String(h).padStart(2,"0"), String(h).padStart(2,"0")));
+for (let m=0; m<60; m+=CONFIG.minuteStep) mm.add(new Option(String(m).padStart(2,"0"), String(m).padStart(2,"0")));
+// клик по полю открывает нативный календарь там, где это поддерживается
+$("#dateBox").addEventListener("click", () => { try { dateInput.showPicker(); } catch(_){} });
+function updateWhen(){
+  state.date = dateInput.value; state.hh = hh.value; state.mm = mm.value;
+  $("#dateLabel").textContent = state.date ? fmtDate(state.date) : "Выбери дату";
+  $("#dateBox").classList.toggle("filled", !!state.date);
+  hh.classList.toggle("filled", !!state.hh); mm.classList.toggle("filled", !!state.mm);
+  const ok = state.date && state.hh && state.mm;
+  whenBtn.disabled = !ok;
+  whenBtn.textContent = !state.date ? "Выбери дату 💗" : (!state.hh || !state.mm) ? "Выбери время 💗" : "Дальше 💗";
+}
+[dateInput, hh, mm].forEach(el => { el.addEventListener("change", updateWhen); el.addEventListener("input", updateWhen); });
+whenBtn.addEventListener("click", () => {
+  if (whenBtn.disabled){ whenBtn.classList.remove("shake"); void whenBtn.offsetWidth; whenBtn.classList.add("shake"); return; }
+  const [x,y]=centerOf(whenBtn); burst(x,y,10); go("s4");
+});
+
+/* ---------- экран 4: варианты ---------- */
+const grid = $("#grid");
+CONFIG.options.forEach(o => {
+  const b = document.createElement("button");
+  b.className = "opt";
+  b.innerHTML = `<span class="emo">${o.emoji}</span><span class="lbl"></span>`;
+  b.querySelector(".lbl").textContent = o.label;
+  b.addEventListener("click", () => {
+    grid.querySelectorAll(".opt").forEach(x => x.classList.remove("picked"));
+    b.classList.add("picked");
+    state.what = o.label;
+    const [x,y]=centerOf(b); burst(x,y,14);
+    setTimeout(finish, 700);
+  });
+  grid.appendChild(b);
+});
+
+/* ---------- экран 5: билет ---------- */
+function finish(){
+  const d = fmtDate(state.date), t = `${state.hh}:${state.mm}`;
+  $("#summary").textContent = `Встречаемся ${d} в ${t}. В планах: ${state.what}.`;
+  $("#tDate").textContent = d; $("#tTime").textContent = t; $("#tWhat").textContent = state.what;
+  go("s5");
+  setTimeout(confetti, 300);
+  notify(`🎟 ${CONFIG.name}: ${d} в ${t} — ${state.what}`);
+  try { localStorage.setItem("date-answer", JSON.stringify(state)); } catch(_){}
+}
+$("#restart").addEventListener("click", () => {
+  tries = 0; yes.style.setProperty("--s", 1);
+  no.style.cssText = ""; no.textContent = CONFIG.noTexts[0];
+  dateInput.value = ""; hh.value = ""; mm.value = ""; updateWhen();
+  grid.querySelectorAll(".opt").forEach(x => x.classList.remove("picked"));
+  go("s1");
+});
+
+/* ---------- уведомление через ntfy.sh ---------- */
+function notify(msg){
+  if (!CONFIG.ntfyTopic) return;
+  fetch("https://ntfy.sh/" + encodeURIComponent(CONFIG.ntfyTopic), { method: "POST", body: msg }).catch(() => {});
+}
+
+/* ---------- конфетти-сердечки (canvas) ---------- */
+function confetti(){
+  const c = $("#confetti"), ctx = c.getContext("2d"), dpr = devicePixelRatio || 1;
+  c.width = innerWidth*dpr; c.height = innerHeight*dpr; ctx.scale(dpr,dpr);
+  const colors = ["#f4436c","#fb7185","#f9a8d4","#e2459b","#fde68a","#ffffff"];
+  const parts = Array.from({length:150}, () => ({
+    x: innerWidth/2 + (Math.random()-.5)*80, y: innerHeight*.35,
+    vx: (Math.random()-.5)*13, vy: -Math.random()*14-4,
+    s: 6+Math.random()*9, r: Math.random()*6, vr: (Math.random()-.5)*.3,
+    c: colors[Math.random()*colors.length|0], heart: Math.random() < .55
+  }));
+  const heart = (s) => { ctx.beginPath(); ctx.moveTo(0,s*.3);
+    ctx.bezierCurveTo(0,0,-s*.5,0,-s*.5,s*.3); ctx.bezierCurveTo(-s*.5,s*.6,0,s*.8,0,s);
+    ctx.bezierCurveTo(0,s*.8,s*.5,s*.6,s*.5,s*.3); ctx.bezierCurveTo(s*.5,0,0,0,0,s*.3); ctx.fill(); };
+  let frame = 0;
+  (function tick(){
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    parts.forEach(p => {
+      p.vy += .32; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillStyle = p.c;
+      ctx.globalAlpha = Math.max(0, 1 - frame/220);
+      p.heart ? heart(p.s*1.4) : ctx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);
+      ctx.restore();
+    });
+    if (++frame < 230) requestAnimationFrame(tick); else ctx.clearRect(0,0,innerWidth,innerHeight);
+  })();
+}
+</script>
+</body>
+</html>
